@@ -46,6 +46,12 @@ git remote show <remote_name>：显示指定远程仓库的详细信息，包括
     helper = store
 ```
 
+### 推送
+
+```bahs
+git push <远程主机名> <本地分支名> <远程分支名> 
+```
+
 
 
 
