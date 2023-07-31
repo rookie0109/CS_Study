@@ -20,6 +20,9 @@ git commit -m '注释'
 
 git push -u origin main
 
+
+git reset # 撤销git add 操作
+
 ```
 
 
@@ -52,6 +55,27 @@ git remote show <remote_name>：显示指定远程仓库的详细信息，包括
 git push <远程主机名> <本地分支名> <远程分支名> 
 ```
 
+###  将远程仓库内容合并到本地
+
+```bash
+git pull <远程仓库名> <branch-name>
+```
+
+### 切换分支
+
+```bash
+git checkout <branch-name>
+```
+
+### 将其他分支合并到本分支
+
+```bash
+# 将<branch-name>合并到当前分支
+git merge <branch-name>
+```
+
+
+
 
 
 
@@ -64,7 +88,9 @@ git push <远程主机名> <本地分支名> <远程分支名>
 
 放在根目录下，可以在其中选择在git 提交过程中忽略一些文件
 
-常见语法：<font style=background:red>待办</font>
+常见语法:
+
+在根目录中文件内直接加入对应文件夹或者文件即可。
 
 - 许可证
 
@@ -75,7 +101,6 @@ git push <远程主机名> <本地分支名> <远程分支名>
 ### 删除仓库
 
 `Settings`最下方'delet'
-
 
 
 
