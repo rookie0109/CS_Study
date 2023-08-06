@@ -1,4 +1,5 @@
 # git && github记录
+
 使用记录
 
 ## git
@@ -24,10 +25,6 @@ git push -u origin main
 git reset # 撤销git add 操作
 
 ```
-
-
-
-
 
 ### git remote
 
@@ -55,7 +52,7 @@ git remote show <remote_name>：显示指定远程仓库的详细信息，包括
 git push <远程主机名> <本地分支名> <远程分支名> 
 ```
 
-###  将远程仓库内容合并到本地
+### 将远程仓库内容合并到本地
 
 ```bash
 git pull <远程仓库名> <branch-name>
@@ -74,12 +71,6 @@ git checkout <branch-name>
 git merge <branch-name>
 ```
 
-
-
-
-
-
-
 ## github
 
 ### 新建仓库
@@ -96,13 +87,36 @@ git merge <branch-name>
 
 开源项目必备，其中MIT最为宽松，几乎没有限制，GPL较为严格。
 
-
-
 ### 删除仓库
 
 `Settings`最下方'delet'
 
+### ssh 配置
+
+```shell
+
+# 查看是否配置本电脑相关用户名
+git config --list
+
+# 没有配置，需要先配置
+git config --global user.name "Your Name"
+git config --global user.email "email@example.com"
+git config --global user.password “"  # 没有用！！！！
+
+# 同时，为了方便重复输入相关设置，可以使用credential.helper将相关内容存储  
+git config --global credential.helper store
+
+# 生成本机密钥， 一般而言ed25519比较安全，其余还有rsa等，-t 指定生成密钥算法  -C 标识使用人邮箱
+ssh-keygen -t ed25519 -C "your-email@example.com"
+
+# 在生成密钥时，可以指定密钥文件的位置，同时需要连续两次输入设置的密码
+# 检测是否配置成功，此步需要输入密码
+ssh -T git@github.git
+
+```
+
+---
 
 
 
-
+之后将.ssh/目录下的,pub文件内容，粘贴到github上相关配置界面上，
