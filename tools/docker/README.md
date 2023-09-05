@@ -1,5 +1,5 @@
 # docker
-
+[教程1](https://yeasy.gitbook.io/docker_practice/underly/ufs)
 ## docker 简介
 
 **容器**： 系统平滑移植， 容器虚拟化技术
@@ -19,7 +19,7 @@ linux 容器：与系统其他部分隔离开的一系列进程，从另一个�
 ## docker基本组成
 
 - 镜像（image)
-  类似类模板，类的定义，一个只读的模板，可以用于创建多个容器
+  类似类模板，类的定义，一个只读的模板，可以用于创建多个容器；轻量级可执行的独立软件包，包含运行某个软件所需的所有内容（代码，运行所需的库，配置等），打包好的环境即可称为镜像。
 - 容器(container)
   类似**根据类模板实例化**，容器时用镜像创建的运行实例，每个容器相互隔离，保证安全。可以视为简易版linux环境和运行在其中的应用程序。
 - 仓库(repository)
@@ -99,7 +99,18 @@ docker并非一个通用的容器工具，依赖于正在运行的linux内核环
   ```
   
 - 镜像加速  
-
+在[阿里云](https://cr.console.aliyun.com/cn-beijing/instances)中查找容器镜像服务，创建一个个人实例,
+配置镜像加速器的代码如下,通过修改daemon配置文件/etc/docker/daemon.json来使用加速器
+```bash
+sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": ["https://no3yzdiu.mirror.aliyuncs.com"]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
 -   
 
 ## docker常见命令
@@ -221,7 +232,21 @@ docker export container-id > file_name.tar
 
 import  # 从tar包中内容创建一个新的文件系统再导入镜像, docker images直接查看
 cat file_name.tar | docker import -image_user/image_name:image_tag
+ 
+ docker commit  # 提交容器副本，称为新的镜像
+ docker commit -m="massages" -a="creater" container_ID new_image_name:tag_name
 
+ # 推送到其他仓库
+ docker push
+
+ docker pull registry # 搭建私有仓库
+
+
+ docker login  # 登录docker hub帐号
+
+ # 容器关闭后重启
+ docker start container_name
+ docker exec -it container_name /bin/bash
 ```
 
 `docker run -d image-name`问题：docker容器后台运行，必须有一个前台进程，如果容器运行的命名不是那些一直挂起的命令（top, tail等），会自动退出。应该根据具体情况，比如ubuntu,一般需要-it, 而mysql等需要后台运行。
@@ -270,16 +295,147 @@ wait      Block until a container stops, then print its exit code   # 截取容�
 ```
 
 
+### 镜像底层实现
+docker镜像层都是**只读的**,容器层是可写的，容器启动时，新的可写层加载到镜像层的顶部，及容器层
+
+#### 联合文件系统
+联合文件系统（UnionFS）是一种分层、轻量级并且高性能的文件系统，它支持对文件系统的修改作为一次提交来一层层的叠加，同时可以将不同目录挂载到同一个虚拟文件系统下(unite several directories into a single virtual filesystem)。  
+联合文件系统是 Docker 镜像的基础。镜像可以通过分层来进行继承，基于基础镜像（没有父镜像），可以制作各种具体的应用镜像。  
+另外，不同 Docker 容器就可以共享一些基础的文件系统层，同时再加上自己独有的改动层，大大提高了存储的效率。  
+Docker 中使用的 AUFS（Advanced Multi-Layered Unification Filesystem）就是一种联合文件系统。 AUFS 支持为每一个成员目录（类似 Git 的分支）设定只读（readonly）、读写（readwrite）和写出（whiteout-able）权限, 同时 AUFS 里有一个类似分层的概念, 对只读权限的分支可以逻辑上进行增量地修改(不影响只读部分的)。  
+分层的好处：可以共享资源。方便复制迁移，复用，相同的base镜像进需要存一份
 
 
+### docker容器数据卷
+`docker`在挂载主机目录访问时，加入`--privileged-true`,开启后，container内的root才是真正的root,
+数据卷的作用，通过映射，将容器内数据备份并持久化到主机目录   
+卷是目录和文件，存在一个或多个容器，不属于联合文件系统，完全独立于容器的生存周期,自动备份
+基本命令：
+```bash
+docker run -it --privileged=true -v 宿主机绝对路径目录:/容器内目录 image_name
+# 其中默认为读写权限，容器目录:rw,可以改成只读,容器目录:ro
+container:cf079dfd2168
+
+# 继承容器卷, 数据共享， 两个容器之间数据也是共享，**继承的是路径**
+docker run -it --privileged=true --volumes-from fa_container_name --name new_container_name image_name 
+```
+### docker安装软件
+基础步骤： 搜索镜像， 拉取镜像，查看镜像，启动镜像，停止容器，移除容器
 
 
+### Dockerfile
+dockerFile是用来构建Docker镜像的文本文件，是由一条条构造镜像所需的指令与参数构成的脚本
+三个步骤：1.编写DockerFile文件，2. docker build 命令构建镜像； 3.docker run 依托镜像启动容器
+基础知识：
+1. 每个保留字指令必须大写且豁免至少需要跟随一个参数
+2. 指令从上到下依次执行
+3. #表示注释
+4. 每条指令都会创建新的镜像层并对镜像层进行提交
+Docker 执行DockerFile的大致流程：
+docker 从基础镜像运行一个容器；
+执行一条指令并对容器作出修改
+执行类似docker commit的操作提交一个新的镜像层
+docker 再基于刚提交的镜像运行一个新容器
+执行dockerfile中的下一条指令直到所有指令都执行完成
+常用保留字：
+```bash
+FROM   # 基础镜像，指定一个已经存在的镜像作为模板，一般是DockerFile的第一行
+MAINTAINER   # 镜像维护者姓名与邮箱
+RUN　<命令行命令>   #　容器构建时需要运行的命令，可以使用shell　或　exec格式,在Docker build 运行
+RUN apt-get install vim
+EXPOSE  # 当前容器对外暴露的端口
+WORKDIR  # 指定创建容器后，终端默认登陆进来的工作目录，一个落脚点
+USER  # 指定该镜像应该以什么用户去执行，若都不指定，默认是root
+
+ENV key=value # 构建镜像过程中配置环境变量
+ENV MY_PATH /user/mytest  # 该环境变量能在后续指令中直接使用这些环境变量
+WORKDIR $MY_PATH
+
+VOLUME  # 容器数据卷，数据保存与持久化动作
+
+ADD  # 将宿主机目录下的文件拷贝进镜像并自动处理URL后解压tar压缩包
+COPY  # 类似ADD 
+COPY src dest   # src 源路径； dest 容器内指定路径，不用事先建立好，可自动创建
+
+CMD  # 指定容器启动后要干的事，可以存在多个CMD，但只有最后一个CMD有效，并且docker run 后的参数会覆盖CMD内容，可能导致其不生效
+
+ENTRYPOINT   # 类似CMD。两者一起使用时，cmd相当于给entrypoint 传参，且entrypoint 不会被docker run后面的指令覆盖
+
+ENTRYPOINT [“nginx”, "-c"]     #定参
+CMD ["/etc/nginx/nginx.conf"]  # 变参  会根据docker run 后面的参数进行改变
+
+```
+构建 `docker build -t new_images_name:TAG .` 在Dockerfile目录下
+
+虚悬镜像的查找与删除
+```bash
+docker ls -f dangling=true
+
+docker images prune
+
+```
+### Docker network
+功能： 容器之间互联通信及端口映射，容器IP变动时可通过服务名直接网络通信而不受影响
+```bash
+sudo docker network --help 
+
+connect     Connect a container to a network
+create      Create a network
+disconnect  Disconnect a container from a network
+inspect     Display detailed information on one or more networks
+ls          List networks
+prune       Remove all unused networks
+rm          Remove one or more networks
+
+sudo docker network inspect network_name
+
+```
+
+网络类型：5种，**`brige`, `host`**. `none`, `container`, 以及自定义模式
+- bridge 
+为每一个容器分配，设置一个IP，并将容器连接到一个docker0虚拟网桥，默认模式；
+Docker服务器会默认创建一个docker0网桥（存在 docker0内部接口），桥接网络的名称为docker0, 在**内核层**连通其他物理或虚拟网卡，使得容器与本机放在同一个物理网络。Docker 默认指定docker0 的IP与子网掩码。主机与容器可以通过网络互相通信。  
+宿主机上所有容器都连接到这个内部网络上，从网管中拿到各自分配的IP
+![网络情况](./images/docker_network.jpg)
+
+- host
+容器不会虚拟自己的网卡，配置自己的IP,使用主机的IP与端口
+![host网络](images/network_host.jpg)
+```bash
+# 出现警告， -p 没有意义，端口号以主机端口号为主
+docker run -d -p 8083:8080 --network host --name containner_name image_name
+docker run -d -p --network host --name containner_name image_name
+
+```
+- none
+容器有独立的network namespace,但并没有对其进行任何网络设置，如分配veth pair 和网桥连接，IP等
+禁用网络功能，只有lo标识，本地回环
+```bash
+docker run -d -p 8083:8080 --network none --name containner_name image_name
+
+```
+- container
+新创建的容器捕获创建自己的网卡与配置自己的IP，而是与另一个容器共享IP，端口范围等
+![container](images/network_container.png)
+```bash
+docker run -it --network container:alpine1 --name alpine2  alpine /bin/sh
+# 若关闭alpine1, alpine2中只剩lo本地回环模式
+```
+- 自定义模式
+bridge 模式，两个容器只能通过ping 172.168.0.x 这只IP才能ping 通，无法直接ping 容器名，自定义网络能够解决这个问题
+```bash
+docker network create my_network
+docker run -d -p 8081:8080 --network my_network --name container_name1 image_name
+docker run -d -p 8081:8080 --network my_network --name container_name2 image_name
+```
+
+### docker工具
+compose :  
+Compose 是 Docker 公司推出的一个工具软件，可以管理多个 Docker 容器组成一个应用。你需要定义一个 YAML 格式的配置文件docker-compose.yml，写好多个容器之间的调用关系。然后，只要一个命令，就能同时启动/关闭这些容器.
+Docker-Compose是Docker官方的开源项目， 负责实现对Docker容器集群的快速编排。
 
 
-
-
-
-
+Portainer 是一款轻量级的应用，它提供了图形化界面，用于方便地管理Docker环境，包括单机环境和集群环境。
 
 
 

@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- imu gps controller -->
+  <xacro:include filename="$(find vehicle_simulator)/urdf/k331.gazebo" /> 
+  
+  <!-- imu pos-->
+  <link name="imu_link" />
+  <joint name="imu_link_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="imu_link" />
+  </joint>
+
+  <!-- lidar-32 -->
+  <!--parames-lidar-->
+  <xacro:property name="lidar_holder_radius" value="0.05"/>
+
+  <xacro:property name="lidar_x" value="0.0"/>
+  <xacro:property name="lidar_y" value="0.0"/>
+  <xacro:property name="lidar_z" value="0.3"/>
+
+  <!-- lidar holder -->
+  <link name="lidar_holder">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="${lidar_holder_radius}" length="${lidar_z-0.01}"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="${lidar_holder_radius}" length="${lidar_z}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+
+  <joint name="lidar_holder_joint" type="fixed">
+    <origin xyz="0.0 0 ${lidar_z / 2}" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="lidar_holder"/>
+  </joint>
+
+  <link name="lidar_link" />
+  <joint name="lidar_link_joint" type="fixed">
+    <origin xyz="${lidar_x} ${lidar_y} ${lidar_z}" rpy="0 0 3.1415926" />
+    <parent link="base_link" />
+    <child link="lidar_link" />
+  </joint>
+
+  <xacro:include filename="$(find vehicle_simulator)/urdf/sensors/HDL-32E.urdf.xacro"/>
+  <xacro:HDL-32E parent="lidar_link" name="velodyne" topic="velodyne_points"
+      hz="10" samples="2187" lasers="32" min_range="0.9" max_range="130.0" 
+      min_angle="-${M_PI}" max_angle="${M_PI}" gpu="true">
+    <origin xyz="0 0 0.0" rpy="0 0 0"/>
+  </xacro:HDL-32E>
+
+  
+  <!-- realsense-->
+  <link name="realsense_mountpoint"/>
+  <joint name="realsense_mountpoint_joint" type="fixed">
+    <origin xyz="0.27 0.0 0.16" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="realsense_mountpoint" />
+  </joint> 
+
+  <xacro:include filename="$(find vehicle_simulator)/urdf/sensors/intel_realsense.urdf.xacro"/>
+  <xacro:intel_realsense_mount name="camera" topic="realsense" parent="realsense_mountpoint"/>
+
+
+</robot>
