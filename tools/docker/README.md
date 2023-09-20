@@ -167,6 +167,24 @@ docker 虚悬镜像： 仓库名和标签都是`<none>`的镜像,及虚悬镜像
  ### 容器命令
 
 有镜像才能创建容器
+docker容器中使用gpu
+安装[nvidia-container-runtime](https://nvidia.github.io/nvidia-container-runtime/),其中Debian-based是ubuntu的类型
+```bash
+# 新建 script.sh 写入内容，执行sh script.sh
+curl -s -L https://nvidia.github.io/nvidia-container-runtime/gpgkey | \
+  sudo apt-key add -
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-container-runtime/$distribution/nvidia-container-runtime.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-container-runtime.list
+sudo apt-get update
+
+# 安装nvidia-container-runtime
+sudo apt-get install nvidia-container-runtime
+systemctl restart docker #重启docker
+# 在创建容器时加入*****
+sudo docker run --gpus all -it --name fyx_python fyx_anaconda_image /bin/bash
+```
+
 
 ```bash
 # 新建并启动容器
@@ -247,6 +265,7 @@ cat file_name.tar | docker import -image_user/image_name:image_tag
  # 容器关闭后重启
  docker start container_name
  docker exec -it container_name /bin/bash
+
 ```
 
 `docker run -d image-name`问题：docker容器后台运行，必须有一个前台进程，如果容器运行的命名不是那些一直挂起的命令（top, tail等），会自动退出。应该根据具体情况，比如ubuntu,一般需要-it, 而mysql等需要后台运行。
@@ -437,7 +456,20 @@ Docker-Compose是Docker官方的开源项目， 负责实现对Docker容器集�
 
 Portainer 是一款轻量级的应用，它提供了图形化界面，用于方便地管理Docker环境，包括单机环境和集群环境。
 
+### 杂项
+1.vscode 无法连接到Docker
+```bash
+# 权限问题，docker使用unix socket进行通讯，但是unix socket属于root用户
+# 方法1
+sudo groupadd docker          #添加docker用户组
+sudo gpasswd -a $USER docker  #将当前用户添加至docker用户组
+newgrp docker                 #更新docker用户组
 
+# 方法2
+sudo chmod 777 /var/run/docker.sock
+
+
+```
 
 
 

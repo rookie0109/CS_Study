@@ -9,6 +9,7 @@
 ```bash
 # 下载仓库内容
 git clone url
+git clone -b branch_name url
 
 # 将本地内容上传到github
 
@@ -16,6 +17,7 @@ git clone url
 git remote add origin https://github.com/rookie0109/CS_Study.git
 
 git add .  # 将项目所有文件加到缓存区
+git reset  # 撤销add内容
 
 git commit -m '注释'
 
