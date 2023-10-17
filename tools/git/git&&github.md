@@ -63,7 +63,18 @@ git pull <远程仓库名> <branch-name>
 ### 切换分支
 
 ```bash
+# 查看所有分支
+git branch
+# 新建分支
+git branch branchname
+# 切换分支
 git checkout <branch-name>
+# 新建并切换
+git checkout -b branchname
+git branch branchname && git checkout branchname
+
+# 第一次提交分支
+git push -u orign <local_branch_name>
 ```
 
 ### 将其他分支合并到本分支
