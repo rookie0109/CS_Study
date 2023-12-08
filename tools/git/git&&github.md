@@ -8,7 +8,7 @@
 
 ```bash
 # 下载仓库内容
-git clone url
+git clone **url**
 git clone -b branch_name url
 
 # 将本地内容上传到github
@@ -114,7 +114,7 @@ git config --list
 # 没有配置，需要先配置
 git config --global user.name "Your Name"
 git config --global user.email "email@example.com"
-git config --global user.password “"  # 没有用！！！！
+git config --global user.password "123"  # 没有用！！！！
 
 # 同时，为了方便重复输入相关设置，可以使用credential.helper将相关内容存储  
 git config --global credential.helper store

@@ -914,6 +914,30 @@ np.split(ary, indices_or_sections, axis=0),如果indices_or_sections是数组，
 
 numpy.random.randint(low, high=None, size=None, dtype='l')
 
+`self.__dict__`是一个包含实例所有属性的字典
+
+在Box2D中，除了 `b2CircleShape` 和 `b2PolygonShape`，还有一些其他形状的支持。以下是其中一些主要的：
+
+1. **b2EdgeShape：** 代表一条线段。它通常用于创建静态边界。
+
+    ```python
+    shape = b2EdgeShape(vertices=[(x1, y1), (x2, y2)])
+    ```
+
+2. **b2ChainShape：** 代表一个由多个线段组成的链。它可以用于创建不规则形状的静态边界。
+
+    ```python
+    shape = b2ChainShape(vertices=[(x1, y1), (x2, y2), ...], loop=False)
+    ```
+
+    这里，`loop` 参数指定链是否闭合。
+
+3. **b2Shape：** 这是一个抽象基类，其他所有形状都是其子类。
+
+这些形状类的使用方式可能会根据具体的应用和版本有所不同，上述示例是基于一些常见的用法。要详细了解每个形状的构造和用法，建议查阅Box2D的文档或相关资源。
+
+GetWorldPoint 函数是 Box2D 中的一个函数，通常用于将局部坐标系中的点转换为世界坐标系中的点。
+
 ## stable_baseline3
 
 actions_from_params函数，从概率分布中进行采样
