@@ -192,3 +192,9 @@ k331_robot.urdf.xacro  // 机器人主题的形状与gazebo环境之间的交互
 
 ```
 **使用ode文件加载的Gazebo环境中，imu无法正常使用**
+
+## 速度平滑器
+
+## 杂项
+ros::TransportHints().tcpNoDelay() 订阅中的一个可选参数，用于指定 ROS 传输层的提示。在这里，tcpNoDelay() 提示告诉 ROS 尽量减少延迟，通过 TCP 连接传输消息。
+

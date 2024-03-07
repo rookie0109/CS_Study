@@ -471,6 +471,21 @@ sudo chmod 777 /var/run/docker.sock
 
 ```
 
+### 文件传输
+```bash
+# 文件压缩
+tar -cvf example.tar example.txt
+# docker to 宿主机
+docker cp my_container:/app/data.txt /host_data
+#宿主机 ssh 到本电脑
+scp username@remote:/path/on/remote /path/to/local/directory
+
+
+# ssh 不输入密码
+ssh-copy-id username@remote
+
+```
+
 
 
 

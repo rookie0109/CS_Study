@@ -1,3 +1,6 @@
 {
-  "markdown.extension.print.theme": "dark"
+  "markdown.extension.print.theme": "dark",
+  "files.associations": {
+    "vector": "cpp"
+  }
 }
