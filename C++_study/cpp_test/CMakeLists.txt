@@ -15,6 +15,9 @@ include_directories(
   )
 
 add_executable(test_node test.cpp)
+
+add_executable(test_po test_polymorphism.cpp)
+
 # target_link_libraries(test_node )
 # target_link_libraries(test_node ${OpenCV_LIBS} ${catkin_LIBRARIES})
 

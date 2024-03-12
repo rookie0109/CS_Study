@@ -93,28 +93,61 @@
 #include <iostream>
 #include <Eigen/Dense>
 
-int main() {
-    // 定义矩阵维度
-    int dim = 6;
+// int main() {
+//     // 定义矩阵维度
+//     int dim = 6;
     
-    // 创建带状矩阵
-    Eigen::MatrixXd band_matrix = Eigen::MatrixXd::Zero(dim, dim);
+//     // 创建带状矩阵
+//     Eigen::MatrixXd band_matrix = Eigen::MatrixXd::Zero(dim, dim);
 
-    // 设置对角线元素为4
-    band_matrix.diagonal().setConstant(4);
+//     // 设置对角线元素为4
+//     band_matrix.diagonal().setConstant(4);
 
-    // 设置上下方各有一条1
-    for (int i = 0; i < dim - 1; ++i) {
-        band_matrix(i, i + 1) = 1;
-        band_matrix(i + 1, i) = 1;
-    }
+//     // 设置上下方各有一条1
+//     for (int i = 0; i < dim - 1; ++i) {
+//         band_matrix(i, i + 1) = 1;
+//         band_matrix(i + 1, i) = 1;
+//     }
 
-    // 打印矩阵
-    std::cout << "Band Matrix:" << std::endl;
-    std::cout << band_matrix << std::endl;
-    std::cout << "Band Matrix inv:" << std::endl;
-    std::cout << band_matrix.inverse() << std::endl;
+//     // 打印矩阵
+//     std::cout << "Band Matrix:" << std::endl;
+//     std::cout << band_matrix << std::endl;
+//     std::cout << "Band Matrix inv:" << std::endl;
+//     std::cout << band_matrix.inverse() << std::endl;
+
+//     return 0;
+// }
+
+int main()
+{
+    // 定义 A 和 b
+    Eigen::Matrix<double, 3, 4> A;
+    Eigen::Matrix<double, 3, 1> b;
+
+    // 填充 A 和 b，这里仅作示例，实际情况根据需求填充
+    A << 1, 2, 3, 4,
+         5, 6, 7, 8,
+         9, 10, 11, 12;
+    b << 1, 2, 3;
+
+    // 计算 scale
+    Eigen::VectorXd scale = A.rowwise().norm();
+
+    // 定义 halves 和 work
+    Eigen::Matrix<double, 5, 3, Eigen::ColMajor> halves(5, 3);
+    // Eigen::VectorXd work((4 + 2) * (4 + 2) * (4 - 1) / 2 + 1 - 4);
+
+    // 填充 halves 的 topRows
+    halves.template topRows<4>() = (A.array().colwise() / scale.array()).transpose();
+
+    // 填充 halves 的 bottomRows
+    halves.template bottomRows<1>() = (-b.array() / scale.array()).transpose();
+
+    // 输出结果
+    std::cout << "scale:\n" << scale << std::endl;
+    
+    std::cout << "Halves:\n" << halves << std::endl;
+    // std::cout << "Work:\n" << work << std::endl;
 
     return 0;
 }
-
