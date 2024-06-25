@@ -1,153 +1,242 @@
 // #include <iostream>
+// #include <vector>
+// #include <algorithm>
+// #include <sstream>
 
-// int cuttingRope(int n) {
-//   if (n < 4) {
-//       return n - 1;
-//   }
-//   const int mod = 1e9 + 7;
-//   auto qpow = [&](long long a, long long n) {
-//       long long ans = 1;
-//       for (; n; n >>= 1) {
-//           if (n & 1) {
-//               ans = ans * a % mod;
-//           }
-//           a = a * a % mod;
-//       }
-//       return (int) ans;
-//   };
-//   if (n % 3 == 0) {
-//       return qpow(3, n / 3);
-//   }
-//   if (n % 3 == 1) {
-//       return qpow(3, n / 3 - 1) * 4L % mod;
-//   }
-//   return qpow(3, n / 3) * 2 % mod;
+// int main() {
+//     std::string line;
+//     while (std::getline(std::cin, line)) {
+//         std::stringstream ss(line);
+//         std::vector<std::string> words;
+//         std::string word;
+//         // while (std::getline(ss, word, ',')) {
+//         //     words.push_back(word);
+//         // }
+//         while (ss >> word) {
+//             words.push_back(word);
+//             std::cout << word << std::endl;
+//         }
+//         std::cout << "words size:" << words.size() << std::endl;
+//         std::sort(words.begin(), words.end(), [](const std::string& a, const std::string& b) {
+//             return a < b;
+//         });
+//         for (size_t i = 0; i < words.size(); ++i) {
+//             std::cout << words[i];
+//             if (i != words.size() - 1) {
+//                 std::cout << ",";
+//             }
+//         }
+//         std::cout << std::endl;
+//     }
+//     return 0;
+// }
+// #include <iostream>
+// #include <vector>
+// #include <string>
+// #include <sstream>
+
+// template <typename T>
+// void process(T& val) {
+//     std::cout << T << std::endl;
+// }
+
+// template <typename T>
+// void process(T&& val) {
+//     std::cout << T << std::endl;
+// }
+
+
+// using namespace std;
+
+// int countBalancedSubsequences(const string& s) {
+//     int n = s.size();
+//     vector<vector<int>> dp(n + 1, vector<int>(2, 0)); // dp[i][j]表示以s[i-1]结尾的平衡串的数量，j表示当前结尾字符是第几个字符
+//     int count[26][2] = {0}; // count[i][j]表示以字符i结尾的平衡串数量，j表示当前结尾字符是第几个字符
+
+//     for (int i = 1; i <= n; ++i) {
+//         int c = s[i - 1] - 'a';
+//         dp[i][0] = dp[i - 1][0]; // 不选择当前字符，平衡串数量不变
+//         dp[i][1] = dp[i - 1][1]; // 不选择当前字符，平衡串数量不变
+//         // 选择当前字符，统计平衡串数量
+//         dp[i][1 - c % 2] = (dp[i][1 - c % 2] + dp[i - 1][c % 2] + 1) % 1000000007;
+//         // 更新以当前字符结尾的平衡串数量
+//         count[c][i % 2] = (count[c][i % 2] + dp[i][c % 2]) % 1000000007;
+//     }
+
+//     int result = 0;
+//     for (int i = 0; i < 26; ++i) {
+//         result = (result + count[i][n % 2]) % 1000000007;
+//     }
+//     return result;
 // }
 
 // int main() {
-//   int n = 50;
-//   std::cout << cuttingRope(n) << std::endl;
-//   return 0;
+
+//     int a = 10;
+//     process(a);
+//     process(std::forward<string>("123"));
+
+
+//     // int i;
+//     // std::cin >>i; 
+//     // std::cin.ignore();
+
+//     // string line;
+//     // std::getline(std::cin, line);
+//     // std::stringstream ss(line);
+//     // for (int j = 0; j < i; ++j) {
+//     //     std::string num;
+//     //     std::getline(ss, num, ' ');
+//     //     cout << num << endl;
+//     // }
+//     // int result = countBalancedSubsequences(s);
+//     // cout << result << endl;
+//     return 0;
+// }
+
+
+// #include <iostream>
+// #include <utility>
+
+// // 函数 print 接受一个左值引用参数和一个右值引用参数，并打印它们的值
+// void print(int& lvalue, int&& rvalue) {
+//     std::cout << "Left value: " << lvalue << std::endl;
+//     std::cout << "Right value: " << rvalue << std::endl;
+// }
+
+// // 函数 process 接受一个左值引用参数和一个右值引用参数，并将它们转发给 print 函数
+// // 左值引用不需要完美转发，右值引用才需要
+// template<typename LRef, typename RRef>
+// void process(LRef&& lref, RRef&& rref) {
+//     print(std::forward<LRef>(lref), std::forward<RRef>(rref));
+// }
+
+// int main() {
+//     int x = 42;
+//     process(x, 100);  // 调用 process，传递左值引用和右值引用
+//     return 0;
 // }
 
 // #include <iostream>
-// #include <vector>
-// #include <algorithm>
 
-
-// template <typename InputIt, typename OutputIt, typename ElemType, typename Comp> 
-// OutputIt filter(InputIt first, InputIt last, OutputIt at, const ElemType& val, Comp pred) {
-//     while ((first = std::find_if(first, last, [&](const auto& elem){ return pred(elem, val); })) != last) {
-//         std::cout << "found value: " << *first << std::endl;
-//         *at++ = *first++;
-//     }
-//     return at;
-// }
-
-// int main() {
-//     std::vector<int> numbers = {1, 2, 3, 4, 5};
-//     std::vector<int> result;
-
-//     // 调用 filter 函数
-//     filter(numbers.begin(), numbers.end(), std::back_inserter(result), 3, std::less<int>());
-//     // back_inserter可以使用inserter()替代
-//     // insterter(vac, vec.end())
-
-//     // 打印输出结果
-//     for (int num : result) {
-//         std::cout << num << " ";
-//     }
-//     std::cout << std::endl;
-
-//     return 0;
-// }
-
-
-// class Stack
+// class BaseTest
 // {
 // private:
 //     /* data */
-//     std::vector<std::string> stack_;
 // public:
-//     Stack(/* args */);
-//     virtual ~Stack();
-//     bool push(const std::string& elem);
-//     bool pop(const std::string& elem);
-//     bool peek(const std::string& elem);
-//     bool empty();
-//     bool fill();
-
-    
-    
-
+//     // BaseTest(/* args */);
+//     ~BaseTest() {};
+//     virtual void process(int a) noexcept = 0;
 // };
 
-// Stack::Stack(/* args */)
+// class Test : public BaseTest
 // {
-// }
-
-// Stack::~Stack()
-// {
-// }
-
-#include <iostream>
-#include <Eigen/Dense>
+// private:
+//     /* data */
+// public:
+//     // Test(/* args */);
+//     ~Test() {};
+//     void process(int a) noexcept override {
+//         std::cout << a << std::endl;
+//     }
+// };
 
 // int main() {
-//     // 定义矩阵维度
-//     int dim = 6;
-    
-//     // 创建带状矩阵
-//     Eigen::MatrixXd band_matrix = Eigen::MatrixXd::Zero(dim, dim);
 
-//     // 设置对角线元素为4
-//     band_matrix.diagonal().setConstant(4);
-
-//     // 设置上下方各有一条1
-//     for (int i = 0; i < dim - 1; ++i) {
-//         band_matrix(i, i + 1) = 1;
-//         band_matrix(i + 1, i) = 1;
-//     }
-
-//     // 打印矩阵
-//     std::cout << "Band Matrix:" << std::endl;
-//     std::cout << band_matrix << std::endl;
-//     std::cout << "Band Matrix inv:" << std::endl;
-//     std::cout << band_matrix.inverse() << std::endl;
-
+//     BaseTest* ss = new Test();
+//     ss->process(10);
+//     delete ss;
 //     return 0;
 // }
 
-int main()
+#include <iostream>
+// osqp-eigen
+#include "OsqpEigen/OsqpEigen.h"
+// eigen
+#include <Eigen/Dense>
+ 
+using namespace std;
+Eigen::SparseMatrix<double> hessian;
+Eigen::VectorXd gradient;
+Eigen::SparseMatrix<double> linearMatrix;
+Eigen::VectorXd lowerBound;
+Eigen::VectorXd upperBound;
+ 
+int initMat(OsqpEigen::Solver& solver)
 {
-    // 定义 A 和 b
-    Eigen::Matrix<double, 3, 4> A;
-    Eigen::Matrix<double, 3, 1> b;
-
-    // 填充 A 和 b，这里仅作示例，实际情况根据需求填充
-    A << 1, 2, 3, 4,
-         5, 6, 7, 8,
-         9, 10, 11, 12;
-    b << 1, 2, 3;
-
-    // 计算 scale
-    Eigen::VectorXd scale = A.rowwise().norm();
-
-    // 定义 halves 和 work
-    Eigen::Matrix<double, 5, 3, Eigen::ColMajor> halves(5, 3);
-    // Eigen::VectorXd work((4 + 2) * (4 + 2) * (4 - 1) / 2 + 1 - 4);
-
-    // 填充 halves 的 topRows
-    halves.template topRows<4>() = (A.array().colwise() / scale.array()).transpose();
-
-    // 填充 halves 的 bottomRows
-    halves.template bottomRows<1>() = (-b.array() / scale.array()).transpose();
-
-    // 输出结果
-    std::cout << "scale:\n" << scale << std::endl;
+    unsigned int numOfVar = 3;
+    unsigned int numOfCons = 4;
+    solver.data()->setNumberOfVariables(numOfVar);
+    solver.data()->setNumberOfConstraints(numOfCons);
+ 
+    hessian.resize(numOfVar, numOfVar);
+    gradient.resize(numOfVar);
+    linearMatrix.resize(numOfCons, numOfVar);
+    lowerBound.resize(numOfCons);
+    upperBound.resize(numOfCons);
+ 
+ 
+    hessian.insert(0, 0) = 1;
+    hessian.insert(0, 1) = -1;
+    hessian.insert(0, 2) = 1;
+    // hessian.insert(1, 0) = -1;
+    hessian.insert(1, 1) = 2;
+    hessian.insert(1, 2) = -2;
+    // hessian.insert(2, 0) = 1;
+    // hessian.insert(2, 1) = -2;
+    hessian.insert(2, 2) = 4;
+   //cout << "hessian" << hessian << endl;
+   /* hessian << 1, -1, 1,
+              -1, 2, -2,
+               1, -2, 4;*/
+ 
+    gradient << 2, -3, 1;
     
-    std::cout << "Halves:\n" << halves << std::endl;
-    // std::cout << "Work:\n" << work << std::endl;
-
-    return 0;
+    linearMatrix.insert(0, 0) = 1;
+    linearMatrix.insert(1, 1) = 1;
+    linearMatrix.insert(2, 2) = 1;
+    linearMatrix.insert(3, 0) = 1;
+    linearMatrix.insert(3, 1) = 1;
+    linearMatrix.insert(3, 2) = 1;
+    /*linearMatrix << 1, 0, 0,
+                    0, 1, 0,
+                    0, 0, 1,
+                    1, 1, 1;*/
+ 
+    lowerBound << 0, 0, 0, 0.5;
+    upperBound << 1, 1, 1, 0.5;
+ 
+    if (!solver.data()->setHessianMatrix(hessian)) return false;
+    if (!solver.data()->setGradient(gradient)) return false;
+    if (!solver.data()->setLinearConstraintsMatrix(linearMatrix)) return false;
+    if (!solver.data()->setLowerBound(lowerBound)) return false;
+    if (!solver.data()->setUpperBound(upperBound)) return false;
+ 
+    return true;
+}
+ 
+int main() {
+    OsqpEigen::Solver solver;
+ 
+    // set the solver
+    solver.settings()->setWarmStart(true);
+ 
+    // instantiate the solver
+    if (initMat(solver)) {
+        if (!solver.initSolver()) return 1;
+    }
+    else {
+        cout << "initilize QP solver failed" << endl;
+        return 1;
+    }
+ 
+    // solve
+    solver.solve();
+ 
+    Eigen::VectorXd QPSolution;
+    QPSolution = solver.getSolution();
+    
+    cout << "x1 = " << QPSolution[0] << endl
+        << "x2 = " << QPSolution[1] << endl
+        << "x3 = " << QPSolution[2] << endl;
 }

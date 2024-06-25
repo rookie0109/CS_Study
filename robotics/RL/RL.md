@@ -18,7 +18,15 @@ softmax函数:
 $$
 softmax(z) = \frac{1}{\sum_{l=1}^{k}exp(z_l)}\left[ exp(z_1), exp(z_2), ..., exp(z_k)\right]^T
 $$
+Softmax函数的梯度计算在深度学习和机器学习中是一个常见的问题。为了计算Softmax函数的梯度，我们首先需要明确Softmax函数的定义。
 
+对于 \(S_i\) 和 \(l_j\)，梯度公式如下：
+
+1. 当 \(i = j\) 时：
+\[ \frac{\partial S_i}{\partial l_j} = S_i \cdot (1 - S_i) \]
+
+1. 当 \(i \neq j\) 时：
+\[ \frac{\partial S_i}{\partial l_j} = -S_i \cdot S_j \]
 
 随机梯度下降:
 

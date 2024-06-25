@@ -8,17 +8,21 @@ set(CMAKE_BUILD_TYPE Debug)
 
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(OsqpEigen REQUIRED)
 
 include_directories(
   ${OpenCV_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
+  ${OsqpEigen_INCLUDE_DIRS}
   )
 
-add_executable(test_node test.cpp)
+add_executable(test_node test1.cpp)
+add_executable(test_osqp test.cpp)
+
 
 add_executable(test_po test_polymorphism.cpp)
 
-# target_link_libraries(test_node )
+target_link_libraries(test_osqp OsqpEigen::OsqpEigen)
 # target_link_libraries(test_node ${OpenCV_LIBS} ${catkin_LIBRARIES})
 
 
