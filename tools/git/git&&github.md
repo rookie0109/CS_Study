@@ -133,3 +133,22 @@ ssh -T git@github.git
 
 
 之后将.ssh/目录下的,pub文件内容，粘贴到github上相关配置界面上，
+
+
+git merge 与 git rebase 的区别
+假设主分支为dev,个人在新分支feature上进行开发时,其他同事在ferture2上进行开发，并已经推送到dev分支,
+核心区别是git merge 适用于主分支dev，git rebase适用于个人分支feature
+```bash
+git checkout dev
+git merge feature1  # 非线性， feature 与 dev形成环
+
+
+git checkout feature 
+git rebase dev  # 解决冲突等
+git checkout dev
+git merge feature1  # 形成线性历史， 提交历史中feature分出一个单独的树杈
+
+```
+![](../images/merge_base_diff.png)
+
+git rebase的使用场景之一为合并多个小分支，适用于个人，三个小commit表示的是一个功能，使用git rebase 可以将其合并成一个commit                              
